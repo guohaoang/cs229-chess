@@ -158,37 +158,54 @@ def print_summary(df):
 def main():
     """Main plotting function."""
     parser = argparse.ArgumentParser(description='Generate training plots')
-    parser.add_argument('--log-file', default='./logs/metrics.jsonl', 
-                       help='Path to metrics JSONL file')
-    parser.add_argument('--output-dir', default='./logs', 
-                       help='Directory to save plots')
+    parser.add_argument('--exp-dir', default=None,
+                       help='Experiment log directory (default: latest under logs/)')
     parser.add_argument('--plots', choices=['all', 'loss', 'accuracy', 'combined'], 
                        default='all', help='Which plots to generate')
     args = parser.parse_args()
-    
+
+    # Determine experiment directory
+    logs_root = Path('logs')
+    if args.exp_dir is None:
+        # Find latest experiment folder
+        exp_dirs = [d for d in logs_root.iterdir() if d.is_dir() and d.name.startswith('exp_')]
+        if not exp_dirs:
+            print('No experiment folders found in logs/.')
+            return
+        exp_dir = max(exp_dirs, key=lambda d: d.stat().st_mtime)
+        print(f"Using latest experiment folder: {exp_dir}")
+    else:
+        exp_dir = Path(args.exp_dir)
+        if not exp_dir.exists():
+            print(f"Experiment directory not found: {exp_dir}")
+            return
+
+    log_file = exp_dir / 'metrics.jsonl'
+    output_dir = exp_dir
+
     # Load metrics
-    print(f"Loading metrics from {args.log_file}...")
-    df = load_metrics(args.log_file)
-    
+    print(f"Loading metrics from {log_file}...")
+    df = load_metrics(log_file)
+
     if df is None or df.empty:
         print("No metrics to plot.")
         return
-    
+
     # Print summary
     print_summary(df)
-    
+
     # Generate plots
-    print(f"\nGenerating plots in {args.output_dir}...")
-    
+    print(f"\nGenerating plots in {output_dir}...")
+
     if args.plots in ['all', 'loss']:
-        plot_loss_curves(df, args.output_dir)
-    
+        plot_loss_curves(df, output_dir)
+
     if args.plots in ['all', 'accuracy']:
-        plot_accuracy_curves(df, args.output_dir)
-    
+        plot_accuracy_curves(df, output_dir)
+
     if args.plots in ['all', 'combined']:
-        plot_combined(df, args.output_dir)
-    
+        plot_combined(df, output_dir)
+
     print("\nDone!")
 
 

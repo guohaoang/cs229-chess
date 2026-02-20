@@ -99,6 +99,14 @@ def main():
     parser.add_argument('--checkpoint', default=None, help='Resume from checkpoint')
     args = parser.parse_args()
 
+    # Create experiment log directory with timestamp and key parameters
+    from datetime import datetime
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    exp_name = f"exp_{timestamp}_model-{args.model}_bs-{args.batch_size}_lr-{args.lr}_epochs-{args.epochs}"
+    log_dir = Path("logs") / exp_name
+    log_dir.mkdir(parents=True, exist_ok=True)
+    print(f"Logging experiment to: {log_dir}")
+
     # Setup device with auto-detection for Apple Silicon
     if args.device:
         device = torch.device(args.device)
@@ -161,7 +169,6 @@ def main():
 
     for epoch in range(start_epoch, args.epochs):
         print(f"\nEpoch {epoch + 1}/{args.epochs}")
-        
         # Train
         train_loss, train_acc, train_acc5 = train_epoch(
             train_loader, model, criterion, optimizer, epoch, device,
@@ -172,8 +179,8 @@ def main():
         print('Validation: ', end='')
         val_loss, val_acc, val_acc5 = validate(val_loader, model, criterion, device)
 
-        # Log metrics
-        log_metrics(epoch, train_loss, val_loss, train_acc, val_acc, train_acc5, val_acc5)
+        # Log metrics to experiment folder
+        log_metrics(epoch, train_loss, val_loss, train_acc, val_acc, train_acc5, val_acc5, log_dir=log_dir)
 
         # Save checkpoint
         if (epoch + 1) % SAVE_INTERVAL == 0:
