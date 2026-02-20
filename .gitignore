@@ -6,6 +6,7 @@ datasets_small/
 # Model checkpoints and logs
 checkpoints/
 logs/
+!logs/
 !logs/exp_*/
 !logs/exp_*/**
 *.pt
