@@ -3,6 +3,13 @@ datasets/
 datasets_small/
 *.pgn.zst
 
+# Model checkpoints and logs
+checkpoints/
+logs/
+*.pt
+*.pth
+data_cache/
+
 # Python
 __pycache__/
 *.py[cod]
