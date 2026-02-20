@@ -51,13 +51,19 @@ def plot_loss_curves(df, output_dir="./logs"):
 
 
 def plot_accuracy_curves(df, output_dir="./logs"):
-    """Plot training and validation accuracy."""
+    """Plot training and validation accuracy (top-1 and top-5)."""
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     
     fig, ax = plt.subplots(figsize=(10, 6))
     
-    ax.plot(df['epoch'], df['train_acc'], label='Train Accuracy', marker='o', linewidth=2)
-    ax.plot(df['epoch'], df['val_acc'], label='Val Accuracy', marker='s', linewidth=2)
+    ax.plot(df['epoch'], df['train_acc'], label='Train Acc@1', marker='o', linewidth=2)
+    ax.plot(df['epoch'], df['val_acc'], label='Val Acc@1', marker='s', linewidth=2)
+    
+    # Plot top-5 if available
+    if 'train_acc5' in df.columns:
+        ax.plot(df['epoch'], df['train_acc5'], label='Train Acc@5', marker='^', linewidth=2, linestyle='--')
+    if 'val_acc5' in df.columns:
+        ax.plot(df['epoch'], df['val_acc5'], label='Val Acc@5', marker='d', linewidth=2, linestyle='--')
     
     ax.set_xlabel('Epoch', fontsize=12)
     ax.set_ylabel('Accuracy (%)', fontsize=12)
@@ -89,8 +95,15 @@ def plot_combined(df, output_dir="./logs"):
     ax1.grid(True, alpha=0.3)
     
     # Accuracy
-    ax2.plot(df['epoch'], df['train_acc'], label='Train Accuracy', marker='o', linewidth=2)
-    ax2.plot(df['epoch'], df['val_acc'], label='Val Accuracy', marker='s', linewidth=2)
+    ax2.plot(df['epoch'], df['train_acc'], label='Train Acc@1', marker='o', linewidth=2)
+    ax2.plot(df['epoch'], df['val_acc'], label='Val Acc@1', marker='s', linewidth=2)
+    
+    # Plot top-5 if available
+    if 'train_acc5' in df.columns:
+        ax2.plot(df['epoch'], df['train_acc5'], label='Train Acc@5', marker='^', linewidth=2, linestyle='--')
+    if 'val_acc5' in df.columns:
+        ax2.plot(df['epoch'], df['val_acc5'], label='Val Acc@5', marker='d', linewidth=2, linestyle='--')
+    
     ax2.set_xlabel('Epoch', fontsize=11)
     ax2.set_ylabel('Accuracy (%)', fontsize=11)
     ax2.set_title('Accuracy Curves', fontsize=12, fontweight='bold')
@@ -115,8 +128,12 @@ def print_summary(df):
     print(f"\nFinal Results:")
     print(f"  Train Loss: {df['train_loss'].iloc[-1]:.4f}")
     print(f"  Val Loss:   {df['val_loss'].iloc[-1]:.4f}")
-    print(f"  Train Acc:  {df['train_acc'].iloc[-1]:.2f}%")
-    print(f"  Val Acc:    {df['val_acc'].iloc[-1]:.2f}%")
+    print(f"  Train Acc@1: {df['train_acc'].iloc[-1]:.2f}%")
+    print(f"  Val Acc@1:   {df['val_acc'].iloc[-1]:.2f}%")
+    
+    if 'train_acc5' in df.columns:
+        print(f"  Train Acc@5: {df['train_acc5'].iloc[-1]:.2f}%")
+        print(f"  Val Acc@5:   {df['val_acc5'].iloc[-1]:.2f}%")
     
     print(f"\nBest Results:")
     best_train_loss_idx = df['train_loss'].idxmin()
@@ -126,8 +143,14 @@ def print_summary(df):
     
     print(f"  Best Train Loss: {df['train_loss'].min():.4f} (Epoch {best_train_loss_idx})")
     print(f"  Best Val Loss:   {df['val_loss'].min():.4f} (Epoch {best_val_loss_idx})")
-    print(f"  Best Train Acc:  {df['train_acc'].max():.2f}% (Epoch {best_train_acc_idx})")
-    print(f"  Best Val Acc:    {df['val_acc'].max():.2f}% (Epoch {best_val_acc_idx})")
+    print(f"  Best Train Acc@1: {df['train_acc'].max():.2f}% (Epoch {best_train_acc_idx})")
+    print(f"  Best Val Acc@1:   {df['val_acc'].max():.2f}% (Epoch {best_val_acc_idx})")
+    
+    if 'train_acc5' in df.columns:
+        best_train_acc5_idx = df['train_acc5'].idxmax()
+        best_val_acc5_idx = df['val_acc5'].idxmax()
+        print(f"  Best Train Acc@5: {df['train_acc5'].max():.2f}% (Epoch {best_train_acc5_idx})")
+        print(f"  Best Val Acc@5:   {df['val_acc5'].max():.2f}% (Epoch {best_val_acc5_idx})")
     
     print("\n" + "="*60)
 

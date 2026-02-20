@@ -100,7 +100,7 @@ def accuracy_topk(output, target, topk=(1, 5)):
         return res
 
 
-def log_metrics(epoch, train_loss, val_loss, train_acc, val_acc, log_dir="./logs"):
+def log_metrics(epoch, train_loss, val_loss, train_acc, val_acc, train_acc5=None, val_acc5=None, log_dir="./logs"):
     """Log training metrics."""
     Path(log_dir).mkdir(parents=True, exist_ok=True)
     
@@ -112,6 +112,12 @@ def log_metrics(epoch, train_loss, val_loss, train_acc, val_acc, log_dir="./logs
         'train_acc': float(train_acc),
         'val_acc': float(val_acc),
     }
+    
+    # Add top-5 accuracies if provided
+    if train_acc5 is not None:
+        metrics['train_acc5'] = float(train_acc5)
+    if val_acc5 is not None:
+        metrics['val_acc5'] = float(val_acc5)
     
     log_file = Path(log_dir) / "metrics.jsonl"
     with open(log_file, 'a') as f:

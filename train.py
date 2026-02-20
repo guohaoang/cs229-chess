@@ -52,7 +52,7 @@ def train_epoch(train_loader, model, criterion, optimizer, epoch, device, log_in
                 'acc@5': f'{top5.avg:.2f}'
             })
 
-    return losses.avg, top1.avg
+    return losses.avg, top1.avg, top5.avg
 
 
 def validate(val_loader, model, criterion, device):
@@ -84,7 +84,7 @@ def validate(val_loader, model, criterion, device):
                     'acc@5': f'{top5.avg:.2f}'
                 })
 
-    return losses.avg, top1.avg
+    return losses.avg, top1.avg, top5.avg
 
 
 def main():
@@ -163,17 +163,17 @@ def main():
         print(f"\nEpoch {epoch + 1}/{args.epochs}")
         
         # Train
-        train_loss, train_acc = train_epoch(
+        train_loss, train_acc, train_acc5 = train_epoch(
             train_loader, model, criterion, optimizer, epoch, device,
             log_interval=LOG_INTERVAL
         )
 
         # Validate
         print('Validation: ', end='')
-        val_loss, val_acc = validate(val_loader, model, criterion, device)
+        val_loss, val_acc, val_acc5 = validate(val_loader, model, criterion, device)
 
         # Log metrics
-        log_metrics(epoch, train_loss, val_loss, train_acc, val_acc)
+        log_metrics(epoch, train_loss, val_loss, train_acc, val_acc, train_acc5, val_acc5)
 
         # Save checkpoint
         if (epoch + 1) % SAVE_INTERVAL == 0:
@@ -189,8 +189,8 @@ def main():
 
     # Test on test set
     print('\nTesting: ', end='')
-    test_loss, test_acc = validate(test_loader, model, criterion, device)
-    print(f"Test Accuracy: {test_acc:.4f}")
+    test_loss, test_acc, test_acc5 = validate(test_loader, model, criterion, device)
+    print(f"Test Accuracy@1: {test_acc:.4f}, Accuracy@5: {test_acc5:.4f}")
 
 
 if __name__ == '__main__':
