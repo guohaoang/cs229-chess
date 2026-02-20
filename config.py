@@ -3,7 +3,7 @@
 # Data
 DATASET_DIR = "datasets_small"
 DATASET_PATTERN = "lichess_db_standard_rated_*.pgn.zst"
-GAMES_PER_FILE = 5000  # Limit for memory (reduced for faster loading)
+GAMES_PER_FILE = 100000  # Limit for memory (reduced for faster loading)
 TRAIN_SPLIT = 0.8
 VAL_SPLIT = 0.1
 TEST_SPLIT = 0.1

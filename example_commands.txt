@@ -1,0 +1,1 @@
+python train.py --batch-size 128 --epochs 10 --device cuda
