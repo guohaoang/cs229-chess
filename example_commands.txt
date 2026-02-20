@@ -1,2 +1,12 @@
 python train.py --batch-size 128 --epochs 10 --device cuda
 $ MP_DUPLICATE_LIB_OK=TRUE python train.py --model v2 --batch-size 128 --epochs 10 --device cuda
+# All plots (loss, accuracy, combined summary)
+python plot_results.py
+
+# Specific plots
+python plot_results.py --plots loss
+python plot_results.py --plots accuracy
+python plot_results.py --plots combined
+
+# Custom log file
+python plot_results.py --log-file ./logs/metrics.jsonl --output-dir ./logs
